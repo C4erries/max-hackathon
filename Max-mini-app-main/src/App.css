@@ -5,6 +5,8 @@
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+  padding-bottom: 60px;
+  min-height: 100vh;
 }
 
 .app__loader {

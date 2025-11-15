@@ -2,6 +2,7 @@ import { Spin, Alert, Empty } from "antd";
 import { RequestCard } from "@/components/widgets/RequestCard";
 import { useApprovalPage } from "./hooks/useApprovalPage";
 import { transformRequestForCard } from "./lib/transformRequest";
+import chevronLeftIcon from "@/assets/icons/Icon (2).svg";
 import s from "./ApprovalPage.module.css";
 
 export type ApprovalPageType = "approval" | "my";
@@ -11,10 +12,21 @@ export interface ApprovalPageProps {
 }
 
 export function ApprovalPage({ type = "approval" }: ApprovalPageProps) {
-  const { requests, isLoading, error, title, handleDetailsClick } = useApprovalPage(type);
+  const { requests, isLoading, error, title, handleDetailsClick, handleBack } = useApprovalPage(type);
 
   return (
     <div className={s.root}>
+      <button
+        className={s.backButton}
+        onClick={handleBack}
+        aria-label="Назад"
+      >
+        <img
+          src={chevronLeftIcon}
+          alt="Назад"
+          className={s.backIcon}
+        />
+      </button>
       <div className={s.header}>
         <h1 className={s.title}>{title}</h1>
       </div>

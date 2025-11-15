@@ -25,16 +25,26 @@ export const queryKeys = {
     lists: () => [...queryKeys.myRequests.all, "list"] as const,
     list: () => [...queryKeys.myRequests.lists()] as const,
   },
-  requestDetail: {
-    all: ["requestDetail"] as const,
-    details: () => [...queryKeys.requestDetail.all, "detail"] as const,
-    detail: (id: number) => [...queryKeys.requestDetail.details(), id] as const,
-  },
+        requestDetail: {
+          all: ["requestDetail"] as const,
+          details: () => [...queryKeys.requestDetail.all, "detail"] as const,
+          detail: (id: number) => [...queryKeys.requestDetail.details(), id] as const,
+        },
+        requestDocuments: {
+          all: ["requestDocuments"] as const,
+          lists: () => [...queryKeys.requestDocuments.all, "list"] as const,
+          list: (requestId: number) => [...queryKeys.requestDocuments.lists(), requestId] as const,
+        },
   profile: {
     all: ["profile"] as const,
   },
-  libraryAccess: {
-    all: ["libraryAccess"] as const,
-  },
+        libraryAccess: {
+          all: ["libraryAccess"] as const,
+        },
+        userRole: {
+          all: ["userRole"] as const,
+          details: () => [...queryKeys.userRole.all, "detail"] as const,
+          detail: (userId: number) => [...queryKeys.userRole.details(), userId] as const,
+        },
 } as const;
 

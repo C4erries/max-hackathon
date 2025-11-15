@@ -7,5 +7,9 @@ export interface ProfileData {
   studentId: string;
   role: string;
   avatarUrl?: string;
+  // Поля для преподавателя
+  position?: string; // Должность (kafedra)
+  placeOfWork?: string; // Место работы
+  tabNumber?: string; // Табельный номер
 }
 

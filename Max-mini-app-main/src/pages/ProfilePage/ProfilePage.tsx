@@ -2,17 +2,29 @@ import { Spin, Alert } from "antd";
 import { Badge } from "@/components/shared/Badge/Badge";
 import { Button } from "@/components/shared/Button";
 import { useProfilePage } from "./hooks/useProfilePage";
+import { useUserRoleData } from "@/lib";
 import bookIcon from "@/assets/icons/book.svg";
+import type { UserRole } from "@/components/shared/BottomNavigation/BottomNavigation";
 import s from "./ProfilePage.module.css";
 
-export function ProfilePage() {
+export interface ProfilePageProps {
+  role?: UserRole;
+}
+
+export function ProfilePage({ role = "student" }: ProfilePageProps) {
+  const { data: roleData } = useUserRoleData();
+  
   const {
     profile,
+    fullName,
     avatarUrl,
     isLoading,
     error,
     handleLibraryClick,
-  } = useProfilePage();
+    isTeacher,
+    isAdmin,
+    roleBadgeText,
+  } = useProfilePage(role, roleData);
 
 
   if (isLoading) {
@@ -55,7 +67,7 @@ export function ProfilePage() {
             <div className={s.onlineDot} />
           </div>
           <div className={s.roleBadge}>
-            {profile.role}
+            {roleBadgeText}
           </div>
         </div>
 
@@ -63,44 +75,78 @@ export function ProfilePage() {
           <Badge
             variant="label"
             label="ФИО"
-            value={profile.fullName}
+            value={fullName}
             className={s.field}
             valueClassName={s.valueNormal}
           />
-          <Badge
-            variant="label"
-            label="Курс, факультет, группа"
-            value={[profile.course, profile.faculty, profile.group]
-              .filter(Boolean)
-              .join(", ") || "Не указано"}
-            className={s.field}
-            valueClassName={s.valueSemibold}
-          />
-          <Badge
-            variant="label"
-            label="Место учёбы"
-            value={profile.placeOfStudy}
-            className={s.field}
-            valueClassName={s.valueSemiboldWhite}
-          />
-          <Badge
-            variant="label"
-            label="Номер студ. билета"
-            value={profile.studentId}
-            className={s.field}
-            valueClassName={s.valueArialBold}
-          />
+          {!isAdmin && (
+            <>
+              {isTeacher ? (
+                <>
+                  <Badge
+                    variant="label"
+                    label="Должность"
+                    value={profile.position || "Не указано"}
+                    className={s.field}
+                    valueClassName={s.valueSemibold}
+                  />
+                  <Badge
+                    variant="label"
+                    label="Место работы"
+                    value={profile.placeOfWork || "Не указано"}
+                    className={s.field}
+                    valueClassName={s.valueSemiboldWhite}
+                  />
+                  <Badge
+                    variant="label"
+                    label="Таб. номер"
+                    value={profile.tabNumber || "Не указано"}
+                    className={s.field}
+                    valueClassName={s.valueArialBold}
+                  />
+                </>
+              ) : (
+                <>
+                  <Badge
+                    variant="label"
+                    label="Курс, факультет, группа"
+                    value={[profile.course, profile.faculty, profile.group]
+                      .filter(Boolean)
+                      .join(", ") || "Не указано"}
+                    className={s.field}
+                    valueClassName={s.valueSemibold}
+                  />
+                  <Badge
+                    variant="label"
+                    label="Место учёбы"
+                    value={profile.placeOfStudy}
+                    className={s.field}
+                    valueClassName={s.valueSemiboldWhite}
+                  />
+                  <Badge
+                    variant="label"
+                    label="Номер студ. билета"
+                    value={profile.studentId}
+                    className={s.field}
+                    valueClassName={s.valueArialBold}
+                  />
+                </>
+              )}
+            </>
+          )}
         </div>
 
-        <div className={s.libraryButtonContainer}>
-          <Button
-            variant="rightLeftIcon"
-            label="Онлайн библиотека"
-            leftIcon={bookIcon}
-            onClick={handleLibraryClick}
-            className={s.libraryButton}
-          />
-        </div>
+        {!isTeacher && !isAdmin && (
+          <div className={s.libraryButtonContainer}>
+            <Button
+              variant="rightLeftIcon"
+              label="Онлайн библиотека"
+              leftIcon={bookIcon}
+              onClick={handleLibraryClick}
+              className={s.libraryButton}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

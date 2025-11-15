@@ -10,6 +10,29 @@
   position: relative;
 }
 
+.backButton {
+  position: absolute;
+  left: var(--space-xl);
+  top: 15px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  padding: 0;
+}
+
+.backIcon {
+  width: 8px;
+  height: 14px;
+  transform: rotate(180deg);
+  display: block;
+}
+
 .header {
   display: flex;
   align-items: center;

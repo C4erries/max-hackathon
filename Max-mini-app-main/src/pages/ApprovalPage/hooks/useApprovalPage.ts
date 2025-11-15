@@ -42,12 +42,17 @@ export function useApprovalPage(type: ApprovalPageType = "approval") {
     [isMyRequests, navigate]
   );
 
+  const handleBack = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
+
   return {
     requests,
     isLoading,
     error,
     title,
     handleDetailsClick,
+    handleBack,
   };
 }
 

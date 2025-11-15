@@ -2,8 +2,41 @@ import { Spin, Alert } from "antd";
 import { Badge } from "@/components/shared/Badge/Badge";
 import { Button } from "@/components/shared/Button";
 import { useRequestDetail } from "./hooks/useRequestDetail";
+import { useDocumentImage } from "./hooks/useDocumentImage";
 import chevronLeftIcon from "@/assets/icons/Icon (2).svg";
+import documentIcon from "@/assets/icons/document.svg";
 import s from "./RequestDetailPage.module.css";
+
+// Компонент для отображения превью изображения с токеном
+function DocumentImagePreview({
+  fileUrl,
+  filename,
+  className,
+}: {
+  fileUrl: string;
+  filename: string;
+  className: string;
+}) {
+  const { imageUrl, isLoading } = useDocumentImage(fileUrl);
+
+  if (isLoading) {
+    return (
+      <div className={className} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Spin size="small" />
+      </div>
+    );
+  }
+
+  if (!imageUrl) {
+    return (
+      <div className={className} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <img src={documentIcon} alt="Ошибка загрузки" style={{ width: "32px", height: "32px" }} />
+      </div>
+    );
+  }
+
+  return <img src={imageUrl} alt={filename} className={className} loading="lazy" />;
+}
 
 export interface RequestDetailPageProps {
   my?: boolean;
@@ -17,9 +50,14 @@ export function RequestDetailPage(props: RequestDetailPageProps) {
     error,
     isDisabled,
     showActions,
+    documents,
+    statusBadgeClassName,
+    clockWrapperClassName,
+    statusIconClassName,
     handleApprove,
     handleReject,
     handleBack,
+    handleDocumentDownload,
   } = useRequestDetail(props);
 
   if (isLoading) {
@@ -75,37 +113,34 @@ export function RequestDetailPage(props: RequestDetailPageProps) {
           <div
             className={[
               s.statusBadge,
-              statusConfig.className === 'statusPending' && s.statusPending,
-              statusConfig.className === 'statusApproved' && s.statusApproved,
-              statusConfig.className === 'statusRejected' && s.statusRejected,
+              statusBadgeClassName.includes("statusPending") && s.statusPending,
+              statusBadgeClassName.includes("statusApproved") && s.statusApproved,
+              statusBadgeClassName.includes("statusRejected") && s.statusRejected,
             ]
               .filter(Boolean)
-              .join(' ')}
+              .join(" ")}
           >
             {statusConfig.label}
           </div>
           <div
             className={[
               s.clockWrapper,
-              statusConfig.clockWrapperClassName === 'clockWrapperPending' &&
-                s.clockWrapperPending,
-              statusConfig.clockWrapperClassName === 'clockWrapperApproved' &&
-                s.clockWrapperApproved,
-              statusConfig.clockWrapperClassName === 'clockWrapperRejected' &&
-                s.clockWrapperRejected,
+              clockWrapperClassName.includes("clockWrapperPending") && s.clockWrapperPending,
+              clockWrapperClassName.includes("clockWrapperApproved") && s.clockWrapperApproved,
+              clockWrapperClassName.includes("clockWrapperRejected") && s.clockWrapperRejected,
             ]
               .filter(Boolean)
-              .join(' ')}
+              .join(" ")}
           >
             <img
               src={statusConfig.icon}
               alt={statusConfig.label}
               className={[
                 s.statusIcon,
-                request.status === 'rejected' && s.statusIconRejected,
+                statusIconClassName.includes("statusIconRejected") && s.statusIconRejected,
               ]
                 .filter(Boolean)
-                .join(' ')}
+                .join(" ")}
             />
           </div>
         </div>
@@ -136,21 +171,54 @@ export function RequestDetailPage(props: RequestDetailPageProps) {
           />
         </div>
 
-        {request.documents && request.documents.length > 0 && (
+        {documents && documents.length > 0 && (
           <div className={s.documentsSection}>
             <div className={s.documentsHeader}>
+              <img
+                src={documentIcon}
+                alt="Документы"
+                className={s.documentsIcon}
+              />
               <h2 className={s.documentsTitle}>Прикреплённые документ</h2>
-              {/* TODO: Добавить иконку документа */}
             </div>
             <div className={s.documentsList}>
-              {request.documents.map((doc, index) => (
-                <img
-                  key={index}
-                  src={doc}
-                  alt={`Документ ${index + 1}`}
-                  className={s.documentPreview}
-                />
-              ))}
+              {documents.map((doc) => {
+                const isImage = doc.mime_type?.startsWith("image/");
+                const isPdf = doc.mime_type === "application/pdf";
+
+                return (
+                  <div
+                    key={doc.id}
+                    className={s.documentItem}
+                    onClick={() => handleDocumentDownload(doc.file_url, doc.filename)}
+                  >
+                    {isImage ? (
+                      <DocumentImagePreview
+                        fileUrl={doc.file_url}
+                        filename={doc.filename}
+                        className={s.documentPreview}
+                      />
+                    ) : isPdf ? (
+                      <div className={s.documentPreviewPdf}>
+                        <img
+                          src={documentIcon}
+                          alt="PDF"
+                          className={s.pdfIcon}
+                        />
+                        <span className={s.pdfLabel}>PDF</span>
+                      </div>
+                    ) : (
+                      <div className={s.documentPreviewGeneric}>
+                        <img
+                          src={documentIcon}
+                          alt="Документ"
+                          className={s.documentIcon}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

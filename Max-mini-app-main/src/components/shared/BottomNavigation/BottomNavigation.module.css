@@ -1,0 +1,43 @@
+.root {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 99px;
+  height: 60px;
+  padding: 14px 48px;
+  background: var(--color-bg-second, #2c2c2e);
+  border-radius: 12px 12px 0 0;
+  z-index: 1000;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s ease;
+}
+
+.navItem:hover {
+  opacity: 0.8;
+}
+
+.navItemActive {
+  opacity: 1;
+}
+
+.navIcon {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
